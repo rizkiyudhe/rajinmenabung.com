@@ -24,8 +24,8 @@
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
                         <div>
                             <label class="block text-sm font-semibold text-gray-700 mb-2">Jenis Transaksi</label>
-                            <select name="type"
-                                class="w-full px-4 py-2.5 rounded-xl border border-gray-200 bg-gray-50 focus:bg-white focus:border-blue-400 focus:ring-2 focus:ring-blue-200 outline-none"
+                            <select name="type" id="type"
+                                class="w-full px-4 py-2.5 rounded-xl border border-gray-200 bg-gray-50 focus:bg-white focus:border-blue-400 focus:ring-2 focus:ring-blue-200 outline-none transition-all"
                                 required>
                                 <option value="expense">Pengeluaran</option>
                                 <option value="income">Pemasukan</option>
@@ -34,7 +34,7 @@
                         <div>
                             <label class="block text-sm font-semibold text-gray-700 mb-2">Tanggal</label>
                             <input type="date" name="date" value="{{ date('Y-m-d') }}"
-                                class="w-full px-4 py-2.5 rounded-xl border border-gray-200 bg-gray-50 focus:bg-white focus:border-blue-400 focus:ring-2 focus:ring-blue-200 outline-none"
+                                class="w-full px-4 py-2.5 rounded-xl border border-gray-200 bg-gray-50 focus:bg-white focus:border-blue-400 focus:ring-2 focus:ring-blue-200 outline-none transition-all"
                                 required>
                         </div>
                     </div>
@@ -43,7 +43,7 @@
                         <div>
                             <label class="block text-sm font-semibold text-gray-700 mb-2">Dompet</label>
                             <select name="wallet_id"
-                                class="w-full px-4 py-2.5 rounded-xl border border-gray-200 bg-gray-50 focus:bg-white focus:border-blue-400 focus:ring-2 focus:ring-blue-200 outline-none"
+                                class="w-full px-4 py-2.5 rounded-xl border border-gray-200 bg-gray-50 focus:bg-white focus:border-blue-400 focus:ring-2 focus:ring-blue-200 outline-none transition-all"
                                 required>
                                 @foreach ($wallets as $wallet)
                                     <option value="{{ $wallet->id }}">{{ $wallet->name }} (Rp
@@ -53,14 +53,9 @@
                         </div>
                         <div>
                             <label class="block text-sm font-semibold text-gray-700 mb-2">Kategori</label>
-                            <select name="category_id"
-                                class="w-full px-4 py-2.5 rounded-xl border border-gray-200 bg-gray-50 focus:bg-white focus:border-blue-400 focus:ring-2 focus:ring-blue-200 outline-none"
+                            <select name="category_id" id="category_id"
+                                class="w-full px-4 py-2.5 rounded-xl border border-gray-200 bg-gray-50 focus:bg-white focus:border-blue-400 focus:ring-2 focus:ring-blue-200 outline-none transition-all"
                                 required>
-                                @foreach ($categories as $category)
-                                    <option value="{{ $category->id }}">{{ $category->name }}
-                                        ({{ $category->type == 'income' ? 'Masuk' : 'Keluar' }})
-                                    </option>
-                                @endforeach
                             </select>
                         </div>
                     </div>
@@ -71,7 +66,7 @@
                             <span
                                 class="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-500 font-medium">Rp</span>
                             <input type="number" name="amount" min="1" placeholder="0"
-                                class="w-full pl-12 pr-4 py-2.5 rounded-xl border border-gray-200 bg-gray-50 focus:bg-white focus:border-blue-400 focus:ring-2 focus:ring-blue-200 outline-none text-lg font-semibold"
+                                class="w-full pl-12 pr-4 py-2.5 rounded-xl border border-gray-200 bg-gray-50 focus:bg-white focus:border-blue-400 focus:ring-2 focus:ring-blue-200 outline-none transition-all text-lg font-semibold"
                                 required>
                         </div>
                     </div>
@@ -80,7 +75,7 @@
                         <label class="block text-sm font-semibold text-gray-700 mb-2">Keterangan <span
                                 class="text-gray-400 font-normal">(Opsional)</span></label>
                         <input type="text" name="description" placeholder="Contoh: Makan siang bareng teman"
-                            class="w-full px-4 py-2.5 rounded-xl border border-gray-200 bg-gray-50 focus:bg-white focus:border-blue-400 focus:ring-2 focus:ring-blue-200 outline-none">
+                            class="w-full px-4 py-2.5 rounded-xl border border-gray-200 bg-gray-50 focus:bg-white focus:border-blue-400 focus:ring-2 focus:ring-blue-200 outline-none transition-all">
                     </div>
 
                     <div class="flex items-center justify-end gap-4 pt-4 border-t border-gray-100">
@@ -95,4 +90,48 @@
             </div>
         </div>
     </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const typeSelect = document.getElementById('type');
+            const categorySelect = document.getElementById('category_id');
+
+            // Konversi data array PHP (Laravel) menjadi array JavaScript
+            const categories = @json($categories);
+
+            function updateCategoryDropdown() {
+                const selectedType = typeSelect.value;
+
+                // Kosongkan opsi dropdown kategori setiap kali jenis transaksi diubah
+                categorySelect.innerHTML = '';
+
+                // Saring kategori yang tipenya sama dengan jenis transaksi (income / expense)
+                const filteredCategories = categories.filter(cat => cat.type === selectedType);
+
+                if (filteredCategories.length > 0) {
+                    // Masukkan kategori yang lolos filter ke dalam dropdown
+                    filteredCategories.forEach(cat => {
+                        const option = document.createElement('option');
+                        option.value = cat.id;
+                        option.textContent = cat.name;
+                        categorySelect.appendChild(option);
+                    });
+                } else {
+                    // Tampilkan pesan default jika belum ada kategori untuk tipe tersebut
+                    const option = document.createElement('option');
+                    option.value = "";
+                    option.textContent = "-- Belum ada kategori --";
+                    option.disabled = true;
+                    option.selected = true;
+                    categorySelect.appendChild(option);
+                }
+            }
+
+            // Jalankan sekali saat halaman pertama dimuat
+            updateCategoryDropdown();
+
+            // Jalankan fungsi setiap kali user mengganti jenis transaksi
+            typeSelect.addEventListener('change', updateCategoryDropdown);
+        });
+    </script>
 </x-app-layout>

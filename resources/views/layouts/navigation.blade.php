@@ -27,7 +27,7 @@
                         <x-nav-link href="{{ route('transactions.index') }}" :active="request()->routeIs('transactions.*')">
                             {{ __('Transaksi') }}
                         </x-nav-link>
-                        <x-nav-link href="#" :active="request()->routeIs('mutasi.*')">
+                        <x-nav-link href="{{ route('transfers.index') }}" :active="request()->routeIs('mutasi.*')">
                             {{ __('Mutasi Saldo') }}
                         </x-nav-link>
                     @endif
