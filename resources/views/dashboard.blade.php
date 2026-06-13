@@ -43,10 +43,61 @@
                         kategori.</p>
                 </div>
             @else
+                @if (!auth()->user()->isAdmin() && $reminderDebts->count() > 0)
+                    <div class="mb-6 space-y-3">
+                        @foreach ($reminderDebts as $debt)
+                            @php
+                                $isOverdue = $debt->due_date && \Carbon\Carbon::parse($debt->due_date)->isPast();
+                                $dueDateFormatted = $debt->due_date
+                                    ? \Carbon\Carbon::parse($debt->due_date)->format('d M Y')
+                                    : null;
+                            @endphp
+
+                            <div
+                                class="p-4 rounded-xl border shadow-sm flex items-center justify-between gap-4 animate-fade-in text-sm
+                {{ $isOverdue ? 'bg-red-50 border-red-200 text-red-900' : 'bg-amber-50 border-amber-200 text-amber-900' }}">
+
+                                <div class="flex items-center gap-3">
+                                    <div
+                                        class="p-2 rounded-lg {{ $isOverdue ? 'bg-red-200 text-red-700' : 'bg-amber-200 text-amber-700' }}">
+                                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z">
+                                            </path>
+                                        </svg>
+                                    </div>
+                                    <div>
+                                        <span class="font-bold">
+                                            {{ $debt->type == 'debt' ? 'Pengingat Utang:' : 'Pengingat Piutang:' }}
+                                        </span>
+                                        Anda memiliki
+                                        {{ $debt->type == 'debt' ? 'kewajiban membayar' : 'tagihan dana' }} kepada
+                                        <span class="font-bold">{{ $debt->person_name }}</span> sebesar
+                                        <span class="font-bold">Rp
+                                            {{ number_format($debt->amount, 0, ',', '.') }}</span>.
+                                        @if ($dueDateFormatted)
+                                            <div
+                                                class="text-xs mt-0.5 font-medium {{ $isOverdue ? 'text-red-600 underline' : 'text-amber-700' }}">
+                                                {{ $isOverdue ? 'SUDAH JATUH TEMPO PADA ' . $dueDateFormatted : 'Jatuh tempo tanggal: ' . $dueDateFormatted }}
+                                            </div>
+                                        @endif
+                                    </div>
+                                </div>
+
+                                <a href="{{ route('debts.index') }}"
+                                    class="px-3 py-1.5 rounded-lg font-semibold text-xs transition shadow-sm
+                    {{ $isOverdue ? 'bg-red-600 hover:bg-red-700 text-white' : 'bg-amber-600 hover:bg-amber-700 text-white' }}">
+                                    Kelola
+                                </a>
+                            </div>
+                        @endforeach
+                    </div>
+                @endif
                 <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
                     <div class="bg-gradient-to-br from-blue-600 to-blue-800 rounded-2xl p-6 shadow-lg text-white">
                         <p class="text-blue-100 text-sm font-medium mb-1">Total Saldo Tersedia</p>
-                        <h3 class="text-3xl font-bold tracking-tight">Rp {{ number_format($totalBalance, 0, ',', '.') }}
+                        <h3 class="text-3xl font-bold tracking-tight">Rp
+                            {{ number_format($totalBalance, 0, ',', '.') }}
                         </h3>
                         <div class="mt-4 flex items-center text-sm text-blue-200">
                             <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">

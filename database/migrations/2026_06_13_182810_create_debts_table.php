@@ -13,6 +13,13 @@ return new class extends Migration
     {
         Schema::create('debts', function (Blueprint $table) {
             $table->id();
+            $table->foreignId('user_id')->constrained()->cascadeOnDelete();
+            $table->enum('type', ['debt', 'receivable']);
+            $table->string('person_name');
+            $table->decimal('amount', 15, 2);
+            $table->date('due_date')->nullable();
+            $table->enum('status', ['pending', 'paid'])->default('pending');
+            $table->string('description')->nullable();
             $table->timestamps();
         });
     }

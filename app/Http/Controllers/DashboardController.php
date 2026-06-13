@@ -24,6 +24,11 @@ class DashboardController extends Controller
             return view('dashboard', compact('totalUsers', 'totalCategories'));
         }
 
+        $reminderDebts = $user->debts()
+            ->where('status', 'pending')
+            ->orderBy('due_date', 'asc')
+            ->get();
+
         // ==========================================
         // 2. LOGIKA UNTUK DASHBOARD USER
         // ==========================================
@@ -95,7 +100,8 @@ class DashboardController extends Controller
             'incomeThisMonth',
             'expenseThisMonth',
             'chartData',
-            'recentTransactions'
+            'recentTransactions',
+            'reminderDebts'
         ));
     }
 }

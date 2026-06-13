@@ -30,6 +30,9 @@
                         <x-nav-link href="{{ route('transfers.index') }}" :active="request()->routeIs('mutasi.*')">
                             {{ __('Mutasi Saldo') }}
                         </x-nav-link>
+                        <x-nav-link href="{{ route('debts.index') }}" :active="request()->routeIs('debts.*')">
+                            {{ __('Utang Piutang') }}
+                        </x-nav-link>
                     @endif
                 </div>
             </div>

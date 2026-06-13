@@ -7,6 +7,7 @@ use App\Http\Controllers\CategoryController;
 use App\Http\Controllers\TransactionController;
 use App\Http\Controllers\TransferController;
 use App\Http\Controllers\DashboardController;
+use App\Http\Controllers\DebtController;
 
 Route::get('/', function () {
     return redirect()->route('login');
@@ -35,6 +36,8 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::resource('wallets', WalletController::class);
         Route::resource('transactions', TransactionController::class);
         Route::resource('transfers', TransferController::class);
+        Route::resource('debts', DebtController::class);
+        Route::post('/debts/{debt}/settle', [DebtController::class, 'settle'])->name('debts.settle');
     });
 });
 
