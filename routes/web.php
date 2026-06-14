@@ -10,6 +10,7 @@ use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\DebtController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\BudgetController;
+use App\Http\Controllers\RecurringTransactionController;
 
 Route::get('/', function () {
     return redirect()->route('login');
@@ -41,6 +42,8 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::resource('debts', DebtController::class);
         Route::post('/debts/{debt}/settle', [DebtController::class, 'settle'])->name('debts.settle');
         Route::resource('budgets', BudgetController::class)->except(['show', 'edit', 'update']);
+        Route::resource('recurring-transactions', RecurringTransactionController::class); //->except(['create', 'show', 'edit', 'update']);
+        Route::patch('recurring-transactions/{recurringTransaction}/toggle', [RecurringTransactionController::class, 'toggle'])->name('recurring-transactions.toggle');
     });
 });
 

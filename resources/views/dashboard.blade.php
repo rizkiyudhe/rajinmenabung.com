@@ -9,6 +9,7 @@
         <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
 
             @if (auth()->user()->isAdmin())
+                {{-- TAMPILAN ADMIN --}}
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
                     <div class="bg-white rounded-2xl p-6 shadow-sm border border-gray-100 flex items-center gap-4">
                         <div class="p-4 bg-blue-50 rounded-xl text-blue-600">
@@ -43,7 +44,10 @@
                         kategori.</p>
                 </div>
             @else
-                @if (!auth()->user()->isAdmin() && $reminderDebts->count() > 0)
+                {{-- TAMPILAN USER --}}
+
+                {{-- Reminder Utang --}}
+                @if ($reminderDebts->count() > 0)
                     <div class="mb-6 space-y-3">
                         @foreach ($reminderDebts as $debt)
                             @php
@@ -54,9 +58,7 @@
                             @endphp
 
                             <div
-                                class="p-4 rounded-xl border shadow-sm flex items-center justify-between gap-4 animate-fade-in text-sm
-                {{ $isOverdue ? 'bg-red-50 border-red-200 text-red-900' : 'bg-amber-50 border-amber-200 text-amber-900' }}">
-
+                                class="p-4 rounded-xl border shadow-sm flex items-center justify-between gap-4 animate-fade-in text-sm {{ $isOverdue ? 'bg-red-50 border-red-200 text-red-900' : 'bg-amber-50 border-amber-200 text-amber-900' }}">
                                 <div class="flex items-center gap-3">
                                     <div
                                         class="p-2 rounded-lg {{ $isOverdue ? 'bg-red-200 text-red-700' : 'bg-amber-200 text-amber-700' }}">
@@ -83,22 +85,21 @@
                                         @endif
                                     </div>
                                 </div>
-
                                 <a href="{{ route('debts.index') }}"
-                                    class="px-3 py-1.5 rounded-lg font-semibold text-xs transition shadow-sm
-                    {{ $isOverdue ? 'bg-red-600 hover:bg-red-700 text-white' : 'bg-amber-600 hover:bg-amber-700 text-white' }}">
+                                    class="px-3 py-1.5 rounded-lg font-semibold text-xs transition shadow-sm {{ $isOverdue ? 'bg-red-600 hover:bg-red-700 text-white' : 'bg-amber-600 hover:bg-amber-700 text-white' }}">
                                     Kelola
                                 </a>
                             </div>
                         @endforeach
                     </div>
                 @endif
+
+                {{-- Summary Cards --}}
                 <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
                     <div class="bg-gradient-to-br from-blue-600 to-blue-800 rounded-2xl p-6 shadow-lg text-white">
                         <p class="text-blue-100 text-sm font-medium mb-1">Total Saldo Tersedia</p>
                         <h3 class="text-3xl font-bold tracking-tight">Rp
-                            {{ number_format($totalBalance, 0, ',', '.') }}
-                        </h3>
+                            {{ number_format($totalBalance, 0, ',', '.') }}</h3>
                         <div class="mt-4 flex items-center text-sm text-blue-200">
                             <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
@@ -142,8 +143,10 @@
                     </div>
                 </div>
 
-                <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+                {{-- Area Grafik --}}
+                <div class="grid grid-cols-1 lg:grid-cols-3 gap-8 mb-8">
 
+                    {{-- Grafik Arus Kas Bar Chart --}}
                     <div class="lg:col-span-2 bg-white rounded-2xl shadow-sm border border-gray-100 p-6">
                         <h3 class="text-lg font-bold text-gray-800 mb-4">Arus Kas Harian ({{ date('F Y') }})</h3>
                         <div class="relative h-72 w-full">
@@ -151,13 +154,13 @@
                         </div>
                     </div>
 
+                    {{-- Aktivitas Terakhir --}}
                     <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-6">
                         <div class="flex justify-between items-center mb-4">
                             <h3 class="text-lg font-bold text-gray-800">Aktivitas Terakhir</h3>
                             <a href="{{ route('transactions.index') }}"
                                 class="text-sm text-blue-600 hover:text-blue-800 font-medium">Lihat Semua</a>
                         </div>
-
                         <div class="space-y-4">
                             @forelse ($recentTransactions as $trx)
                                 <div
@@ -200,30 +203,48 @@
                             @endforelse
                         </div>
                     </div>
-
                 </div>
 
+                {{-- Area Donut Chart --}}
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+                    <div class="bg-white p-6 rounded-2xl shadow-sm border border-gray-100">
+                        <h3 class="text-lg font-bold text-gray-700 mb-6">Pengeluaran per Kategori</h3>
+                        <div class="relative w-full h-72">
+                            <canvas id="expenseChart"></canvas>
+                        </div>
+                    </div>
+
+                    <div class="bg-white p-6 rounded-2xl shadow-sm border border-gray-100">
+                        <h3 class="text-lg font-bold text-gray-700 mb-6">Pemasukan per Kategori</h3>
+                        <div class="relative w-full h-72">
+                            <canvas id="incomeChart"></canvas>
+                        </div>
+                    </div>
+                </div>
+
+                {{-- SCRIPT --}}
                 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
                 <script>
                     document.addEventListener('DOMContentLoaded', function() {
+                        // 1. Bar Chart Arus Kas Harian
                         const ctx = document.getElementById('cashflowChart').getContext('2d');
                         const chartData = @json($chartData);
 
                         new Chart(ctx, {
-                            type: 'bar', // Bisa diganti 'line' jika Anda suka grafik garis
+                            type: 'bar',
                             data: {
                                 labels: chartData.labels,
                                 datasets: [{
                                         label: 'Pemasukan',
                                         data: chartData.income,
-                                        backgroundColor: '#10b981', // Tailwind Emerald 500
+                                        backgroundColor: '#10b981',
                                         borderRadius: 4,
                                         barPercentage: 0.6,
                                     },
                                     {
                                         label: 'Pengeluaran',
                                         data: chartData.expense,
-                                        backgroundColor: '#f43f5e', // Tailwind Rose 500
+                                        backgroundColor: '#f43f5e',
                                         borderRadius: 4,
                                         barPercentage: 0.6,
                                     }
@@ -274,6 +295,77 @@
                                     x: {
                                         grid: {
                                             display: false
+                                        }
+                                    }
+                                }
+                            }
+                        });
+
+                        // 2. Data untuk Donut Chart
+                        const expenseData = {!! json_encode($expenses->pluck('total')) !!};
+                        const expenseLabels = {!! json_encode($expenses->pluck('category_name')) !!}; // FIXED: category_name
+
+                        const incomeData = {!! json_encode($incomes->pluck('total')) !!};
+                        const incomeLabels = {!! json_encode($incomes->pluck('category_name')) !!}; // FIXED: category_name
+
+                        // 3. Render Donut Chart Pengeluaran
+                        new Chart(document.getElementById('expenseChart'), {
+                            type: 'doughnut', // FIXED: doughnut
+                            data: {
+                                labels: expenseLabels,
+                                datasets: [{
+                                    data: expenseData,
+                                    backgroundColor: ['#ef4444', '#f97316', '#eab308', '#84cc16', '#06b6d4',
+                                        '#d946ef', '#6366f1'
+                                    ]
+                                }]
+                            },
+                            options: {
+                                responsive: true,
+                                maintainAspectRatio: false,
+                                cutout: '65%', // Menentukan ketebalan donat
+                                plugins: {
+                                    legend: {
+                                        position: 'bottom'
+                                    },
+                                    tooltip: {
+                                        callbacks: {
+                                            label: function(context) {
+                                                let value = context.raw || 0;
+                                                return context.label + ': Rp ' + value.toLocaleString('id-ID');
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        });
+
+                        // 4. Render Donut Chart Pemasukan
+                        new Chart(document.getElementById('incomeChart'), {
+                            type: 'doughnut', // FIXED: doughnut
+                            data: {
+                                labels: incomeLabels,
+                                datasets: [{
+                                    data: incomeData,
+                                    backgroundColor: ['#22c55e', '#10b981', '#3b82f6', '#8b5cf6', '#a855f7',
+                                        '#ec4899', '#14b8a6'
+                                    ]
+                                }]
+                            },
+                            options: {
+                                responsive: true,
+                                maintainAspectRatio: false,
+                                cutout: '65%', // Menentukan ketebalan donat
+                                plugins: {
+                                    legend: {
+                                        position: 'bottom'
+                                    },
+                                    tooltip: {
+                                        callbacks: {
+                                            label: function(context) {
+                                                let value = context.raw || 0;
+                                                return context.label + ': Rp ' + value.toLocaleString('id-ID');
+                                            }
                                         }
                                     }
                                 }

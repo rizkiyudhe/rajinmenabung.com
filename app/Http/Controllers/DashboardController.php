@@ -7,6 +7,7 @@ use App\Models\User;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use App\Models\Transaction;
 
 class DashboardController extends Controller
 {
@@ -50,6 +51,22 @@ class DashboardController extends Controller
             ->whereMonth('date', $currentMonth)
             ->whereYear('date', $currentYear)
             ->sum('amount');
+
+        // Mengambil data pengeluaran per kategori
+        $expenses = Transaction::join('categories', 'transactions.category_id', '=', 'categories.id')
+            ->where('transactions.user_id', auth()->id())
+            ->where('categories.type', 'expense') // Filter berdasarkan kolom type di tabel categories
+            ->select('categories.name as category_name', DB::raw('sum(transactions.amount) as total'))
+            ->groupBy('categories.name')
+            ->get();
+
+        // Mengambil data pemasukan per kategori
+        $incomes = Transaction::join('categories', 'transactions.category_id', '=', 'categories.id')
+            ->where('transactions.user_id', auth()->id())
+            ->where('categories.type', 'income') // Filter berdasarkan kolom type di tabel categories
+            ->select('categories.name as category_name', DB::raw('sum(transactions.amount) as total'))
+            ->groupBy('categories.name')
+            ->get();
 
         // B. Data Grafik (Pemasukan vs Pengeluaran Harian Bulan Ini)
         $daysInMonth = Carbon::now()->daysInMonth;
@@ -101,7 +118,9 @@ class DashboardController extends Controller
             'expenseThisMonth',
             'chartData',
             'recentTransactions',
-            'reminderDebts'
+            'reminderDebts',
+            'expenses',
+            'incomes',
         ));
     }
 }
