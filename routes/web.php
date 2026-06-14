@@ -11,6 +11,7 @@ use App\Http\Controllers\DebtController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\BudgetController;
 use App\Http\Controllers\RecurringTransactionController;
+use App\Http\Controllers\ReportController;
 
 Route::get('/', function () {
     return redirect()->route('login');
@@ -44,6 +45,10 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::resource('budgets', BudgetController::class)->except(['show', 'edit', 'update']);
         Route::resource('recurring-transactions', RecurringTransactionController::class); //->except(['create', 'show', 'edit', 'update']);
         Route::patch('recurring-transactions/{recurringTransaction}/toggle', [RecurringTransactionController::class, 'toggle'])->name('recurring-transactions.toggle');
+
+        Route::get('reports', [ReportController::class, 'index'])->name('reports.index');
+        Route::get('reports/export/excel', [ReportController::class, 'exportExcel'])->name('reports.excel');
+        Route::get('reports/export/pdf', [ReportController::class, 'exportPdf'])->name('reports.pdf');
     });
 });
 
