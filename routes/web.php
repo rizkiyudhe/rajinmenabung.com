@@ -21,7 +21,6 @@ Route::get('/', function () {
 // ROUTE UMUM (Semua yang login bisa akses)
 Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
-    Route::resource('master-wallets', MasterWalletController::class)->only(['index', 'store', 'destroy']);
 
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
@@ -33,6 +32,9 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::middleware(['admin'])->group(function () {
         Route::resource('users', UserController::class);
         Route::resource('categories', CategoryController::class);
+
+        // PERBAIKAN: Dipindah ke blok Admin dan 'create' diaktifkan kembali (hanya except 'show')
+        Route::resource('master-wallets', MasterWalletController::class)->except(['show']);
     });
 
     // ====================================================
@@ -45,7 +47,8 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::resource('debts', DebtController::class);
         Route::post('/debts/{debt}/settle', [DebtController::class, 'settle'])->name('debts.settle');
         Route::resource('budgets', BudgetController::class)->except(['show', 'edit', 'update']);
-        Route::resource('recurring-transactions', RecurringTransactionController::class); //->except(['create', 'show', 'edit', 'update']);
+
+        Route::resource('recurring-transactions', RecurringTransactionController::class);
         Route::patch('recurring-transactions/{recurringTransaction}/toggle', [RecurringTransactionController::class, 'toggle'])->name('recurring-transactions.toggle');
 
         Route::get('reports', [ReportController::class, 'index'])->name('reports.index');

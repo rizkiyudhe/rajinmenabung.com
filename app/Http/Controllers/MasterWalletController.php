@@ -10,17 +10,19 @@ class MasterWalletController extends Controller
 {
     public function index()
     {
-        // Pastikan hanya admin yang bisa akses (opsional, ganti sesuai logika admin Anda)
-        if (!auth()->user()->isAdmin()) abort(403);
-
+        // Catatan: Pengecekan isAdmin() dihapus dari sini karena 
+        // sudah ditangani secara otomatis oleh route middleware ['admin']
         $masterWallets = MasterWallet::latest()->get();
         return view('admin.master_wallets.index', compact('masterWallets'));
     }
 
+    public function create()
+    {
+        return view('admin.master_wallets.create');
+    }
+
     public function store(Request $request)
     {
-        if (!auth()->user()->isAdmin()) abort(403);
-
         $request->validate([
             'name' => 'required|string|max:255|unique:master_wallets,name',
             'logo' => 'nullable|image|mimes:jpeg,png,jpg,svg|max:2048',
@@ -34,35 +36,50 @@ class MasterWalletController extends Controller
 
         MasterWallet::create($data);
 
-        return back()->with('success', 'Master Wallet berhasil ditambahkan.');
+        // Setelah berhasil tambah, pindah ke halaman index
+        return redirect()->route('master-wallets.index')->with('success', 'Master Wallet berhasil ditambahkan.');
+    }
+
+    public function edit(MasterWallet $masterWallet)
+    {
+        // Fungsi ini hanya bertugas menampilkan view form edit
+        return view('admin.master_wallets.edit', compact('masterWallet'));
+    }
+
+    public function update(Request $request, MasterWallet $masterWallet)
+    {
+        // Pengecekan unique name dikecualikan untuk ID dompet ini sendiri
+        $request->validate([
+            'name' => 'required|string|max:255|unique:master_wallets,name,' . $masterWallet->id,
+            'logo' => 'nullable|image|mimes:jpeg,png,jpg,svg|max:2048',
+        ]);
+
+        $data = $request->only('name');
+
+        if ($request->hasFile('logo')) {
+            // Hapus gambar lama jika ada
+            if ($masterWallet->logo) {
+                Storage::disk('public')->delete($masterWallet->logo);
+            }
+            // Simpan gambar baru
+            $data['logo'] = $request->file('logo')->store('master-wallets', 'public');
+        }
+
+        $masterWallet->update($data);
+
+        // Setelah berhasil edit, pindah ke halaman index
+        return redirect()->route('master-wallets.index')->with('success', 'Master Wallet berhasil diperbarui.');
     }
 
     public function destroy(MasterWallet $masterWallet)
     {
-        if (!auth()->user()->isAdmin()) abort(403);
-
         if ($masterWallet->logo) {
             Storage::disk('public')->delete($masterWallet->logo);
         }
 
         $masterWallet->delete();
+
+        // Tetap gunakan back() untuk hapus agar user tidak terlempar ke mana-mana
         return back()->with('success', 'Master Wallet berhasil dihapus.');
-    }
-
-    public function update(Request $request, MasterWallet $masterWallet)
-    {
-        $request->validate([
-            'name' => 'required|string|max:255',
-            'logo' => 'nullable|image|mimes:jpeg,png,jpg,svg|max:2048',
-        ]);
-
-        $data = $request->only('name');
-        if ($request->hasFile('logo')) {
-            if ($masterWallet->logo) Storage::disk('public')->delete($masterWallet->logo);
-            $data['logo'] = $request->file('logo')->store('master-wallets', 'public');
-        }
-
-        $masterWallet->update($data);
-        return back()->with('success', 'Dompet berhasil diupdate.');
     }
 }
