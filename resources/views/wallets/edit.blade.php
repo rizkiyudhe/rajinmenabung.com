@@ -14,12 +14,17 @@
                         @csrf
                         @method('PUT') <div class="mb-4">
                             <label for="name" class="block text-sm font-medium text-gray-700">Nama Dompet</label>
-                            <input type="text" name="name" id="name" value="{{ old('name', $wallet->name) }}"
-                                class="mt-1 block w-full border-gray-300 focus:border-blue-500 focus:ring-blue-500 rounded-md shadow-sm"
-                                required>
-                            @error('name')
-                                <p class="text-red-500 text-xs mt-1">{{ $message }}</p>
-                            @enderror
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700">Nama Dompet / Rekening</label>
+                                <select name="name"
+                                    class="mt-1 w-full rounded-xl border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
+                                    required>
+                                    <option value="">-- Pilih Jenis Dompet --</option>
+                                    @foreach ($masterWallets as $mw)
+                                        <option value="{{ $wallet->name == $mw->name ? 'selected' : '' }}"</option>
+                                    @endforeach
+                                </select>
+                            </div>
                         </div>
 
                         <div class="mb-6">

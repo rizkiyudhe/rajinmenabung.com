@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Wallet;
+use App\Models\MasterWallet; // Tambahkan import ini
 use Illuminate\Http\Request;
 
 class WalletController extends Controller
@@ -16,7 +17,9 @@ class WalletController extends Controller
 
     public function create()
     {
-        return view('wallets.create');
+        // Ambil data master wallet untuk ditampilkan di dropdown
+        $masterWallets = MasterWallet::orderBy('name', 'asc')->get();
+        return view('wallets.create', compact('masterWallets'));
     }
 
     public function store(Request $request)
@@ -37,7 +40,10 @@ class WalletController extends Controller
         // Pastikan user tidak mengedit dompet orang lain
         if ($wallet->user_id !== auth()->id()) abort(403);
 
-        return view('wallets.edit', compact('wallet'));
+        // Ambil data master wallet untuk ditampilkan di dropdown
+        $masterWallets = MasterWallet::orderBy('name', 'asc')->get();
+
+        return view('wallets.edit', compact('wallet', 'masterWallets'));
     }
 
     public function update(Request $request, Wallet $wallet)

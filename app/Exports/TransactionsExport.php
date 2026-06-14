@@ -52,7 +52,7 @@ class TransactionsExport implements FromQuery, WithHeadings, WithMapping
     public function map($transaction): array
     {
         return [
-            $transaction->date->format('d/m/Y'),
+            \Carbon\Carbon::parse($transaction->date)->format('d/m/Y'),
             $transaction->description,
             $transaction->category->name,
             $transaction->wallet->name,

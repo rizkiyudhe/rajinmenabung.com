@@ -59,6 +59,15 @@
                     </svg>
                     Kategori
                 </a>
+                <a href="{{ route('master-wallets.index') }}"
+                    class="{{ request()->routeIs('master-wallets.*') ? 'bg-blue-50 text-blue-700 font-semibold' : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900 font-medium' }} flex items-center gap-3 px-4 py-3 rounded-xl transition-colors text-sm">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z">
+                        </path>
+                    </svg>
+                    Master Dompet
+                </a>
             @else
                 <div class="pt-4 pb-2 text-xs font-bold text-gray-400 uppercase tracking-wider pl-4">Keuangan Pribadi
                 </div>
@@ -106,8 +115,6 @@
                     </svg>
                     Utang Piutang
                 </a>
-
-                {{-- MENU BARU: TRANSAKSI BERULANG --}}
                 <a href="{{ route('recurring-transactions.index') }}"
                     class="{{ request()->routeIs('recurring-transactions.*') ? 'bg-blue-50 text-blue-700 font-semibold' : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900 font-medium' }} flex items-center gap-3 px-4 py-3 rounded-xl transition-colors text-sm">
                     <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -116,6 +123,17 @@
                         </path>
                     </svg>
                     Transaksi Berulang
+                </a>
+
+                {{-- MENU BARU: LAPORAN KEUANGAN --}}
+                <a href="{{ route('reports.index') }}"
+                    class="{{ request()->routeIs('reports.*') ? 'bg-blue-50 text-blue-700 font-semibold' : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900 font-medium' }} flex items-center gap-3 px-4 py-3 rounded-xl transition-colors text-sm mt-2 border-t border-dashed border-gray-200 pt-3">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z">
+                        </path>
+                    </svg>
+                    Laporan Keuangan
                 </a>
             @endif
         </div>

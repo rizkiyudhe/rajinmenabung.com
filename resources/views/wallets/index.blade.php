@@ -22,12 +22,39 @@
 
             <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                 @forelse ($wallets as $wallet)
+                    {{-- Mencari Logo Master Wallet yang cocok dengan Nama Dompet --}}
+                    @php
+                        $master = \App\Models\MasterWallet::where('name', $wallet->name)->first();
+                    @endphp
+
                     <div
                         class="bg-white overflow-hidden shadow-sm hover:shadow-md rounded-2xl border border-gray-100 transition-all duration-300 group">
                         <div class="p-6">
 
                             <div class="flex items-center justify-between mb-4">
-                                <h3 class="text-lg font-bold text-gray-800 truncate">{{ $wallet->name }}</h3>
+                                <div class="flex items-center gap-3">
+                                    {{-- Tampilkan Logo jika ada, jika tidak pakai icon default --}}
+                                    @if ($master && $master->logo)
+                                        <div
+                                            class="w-10 h-10 shrink-0 bg-white border border-gray-100 rounded-lg flex items-center justify-center p-1 overflow-hidden">
+                                            <img src="{{ asset('storage/' . $master->logo) }}" alt="{{ $wallet->name }}"
+                                                class="w-full h-full object-contain">
+                                        </div>
+                                    @else
+                                        <div
+                                            class="w-10 h-10 shrink-0 bg-blue-50 text-blue-600 rounded-lg flex items-center justify-center">
+                                            <svg class="w-6 h-6" fill="none" stroke="currentColor"
+                                                viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                    d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z">
+                                                </path>
+                                            </svg>
+                                        </div>
+                                    @endif
+
+                                    <h3 class="text-lg font-bold text-gray-800 truncate">{{ $wallet->name }}</h3>
+                                </div>
+
                                 <div
                                     class="w-2.5 h-2.5 rounded-full bg-emerald-500 shadow-[0_0_8px_rgba(16,185,129,0.5)]">
                                 </div>
@@ -126,14 +153,16 @@
                     <div
                         class="col-span-1 md:col-span-2 lg:col-span-3 bg-white py-16 px-4 rounded-2xl border border-dashed border-gray-300 text-center">
                         <div class="mx-auto w-16 h-16 bg-gray-50 rounded-full flex items-center justify-center mb-4">
-                            <svg class="w-8 h-8 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <svg class="w-8 h-8 text-gray-400" fill="none" stroke="currentColor"
+                                viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"
                                     d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z">
                                 </path>
                             </svg>
                         </div>
                         <h3 class="text-lg font-bold text-gray-700 mb-2">Belum Ada Dompet</h3>
-                        <p class="text-sm text-gray-500 mb-6 max-w-sm mx-auto">Silakan tambahkan dompet (misal: Rekening
+                        <p class="text-sm text-gray-500 mb-6 max-w-sm mx-auto">Silakan tambahkan dompet (misal:
+                            Rekening
                             BCA, Uang Tunai, atau e-Wallet) pertama Anda untuk mulai mencatat keuangan.</p>
                         <a href="{{ route('wallets.create') }}"
                             class="inline-flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white font-semibold px-5 py-2.5 rounded-xl shadow-md transition-colors">
