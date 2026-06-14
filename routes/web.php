@@ -8,6 +8,8 @@ use App\Http\Controllers\TransactionController;
 use App\Http\Controllers\TransferController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\DebtController;
+use App\Http\Controllers\UserController;
+use App\Http\Controllers\BudgetController;
 
 Route::get('/', function () {
     return redirect()->route('login');
@@ -25,7 +27,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
     // BLOK 1: KHUSUS ADMIN SAJA
     // ====================================================
     Route::middleware(['admin'])->group(function () {
-        // Route::resource('users', UserController::class);
+        Route::resource('users', UserController::class);
         Route::resource('categories', CategoryController::class);
     });
 
@@ -38,6 +40,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::resource('transfers', TransferController::class);
         Route::resource('debts', DebtController::class);
         Route::post('/debts/{debt}/settle', [DebtController::class, 'settle'])->name('debts.settle');
+        Route::resource('budgets', BudgetController::class)->except(['show', 'edit', 'update']);
     });
 });
 

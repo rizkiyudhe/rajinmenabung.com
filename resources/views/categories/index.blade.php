@@ -20,42 +20,6 @@
     <div class="py-8">
         <div class="max-w-5xl mx-auto sm:px-6 lg:px-8">
 
-            @if (session('success'))
-                <div
-                    class="mb-4 bg-green-50 border-l-4 border-green-500 text-green-800 p-3 rounded-r-lg shadow-sm flex items-start gap-3 animate-fade-in text-sm">
-                    <svg class="w-5 h-5 text-green-500 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                            d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
-                    </svg>
-                    <span class="flex-1">{{ session('success') }}</span>
-                    <button type="button" class="text-green-600 hover:text-green-800"
-                        onclick="this.parentElement.remove()">
-                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                d="M6 18L18 6M6 6l12 12"></path>
-                        </svg>
-                    </button>
-                </div>
-            @endif
-
-            @if (session('error'))
-                <div
-                    class="mb-4 bg-red-50 border-l-4 border-red-500 text-red-800 p-3 rounded-r-lg shadow-sm flex items-start gap-3 animate-fade-in text-sm">
-                    <svg class="w-5 h-5 text-red-500 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                            d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
-                    </svg>
-                    <span class="flex-1">{{ session('error') }}</span>
-                    <button type="button" class="text-red-600 hover:text-red-800"
-                        onclick="this.parentElement.remove()">
-                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                d="M6 18L18 6M6 6l12 12"></path>
-                        </svg>
-                    </button>
-                </div>
-            @endif
-
             <div class="bg-white rounded-xl shadow-md border border-gray-100 overflow-hidden">
                 <div class="overflow-x-auto">
                     <table class="min-w-full divide-y divide-gray-200">
@@ -106,6 +70,7 @@
                                     </td>
                                     <td class="px-5 py-3 whitespace-nowrap text-right text-sm font-medium">
                                         <div class="flex justify-end gap-2">
+
                                             <a href="{{ route('categories.edit', $cat) }}"
                                                 class="inline-flex items-center gap-1 text-blue-600 hover:text-blue-800 bg-blue-50 hover:bg-blue-100 px-2.5 py-1.5 rounded-md transition-all duration-200">
                                                 <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor"
@@ -117,12 +82,10 @@
                                                 </svg>
                                                 Edit
                                             </a>
-                                            <form action="{{ route('categories.destroy', $cat) }}" method="POST"
-                                                onsubmit="return confirm('Yakin ingin menghapus kategori ini?');"
-                                                class="inline">
-                                                @csrf
-                                                @method('DELETE')
-                                                <button type="submit"
+
+                                            <div x-data="{ openDelete: false }" class="inline">
+
+                                                <button @click="openDelete = true" type="button"
                                                     class="inline-flex items-center gap-1 text-red-600 hover:text-red-800 bg-red-50 hover:bg-red-100 px-2.5 py-1.5 rounded-md transition-all duration-200">
                                                     <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor"
                                                         viewBox="0 0 24 24">
@@ -133,7 +96,65 @@
                                                     </svg>
                                                     Hapus
                                                 </button>
-                                            </form>
+
+                                                <div x-show="openDelete"
+                                                    class="fixed inset-0 z-50 overflow-y-auto flex items-center justify-center p-4 text-left"
+                                                    style="display: none;">
+
+                                                    <div x-show="openDelete" x-transition:enter="ease-out duration-300"
+                                                        x-transition:enter-start="opacity-0"
+                                                        x-transition:enter-end="opacity-100"
+                                                        x-transition:leave="ease-in duration-200"
+                                                        x-transition:leave-start="opacity-100"
+                                                        x-transition:leave-end="opacity-0" @click="openDelete = false"
+                                                        class="fixed inset-0 bg-gray-900/40 backdrop-blur-sm transition-opacity">
+                                                    </div>
+
+                                                    <div x-show="openDelete" x-transition:enter="ease-out duration-300"
+                                                        x-transition:enter-start="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95"
+                                                        x-transition:enter-end="opacity-100 translate-y-0 sm:scale-100"
+                                                        x-transition:leave="ease-in duration-200"
+                                                        x-transition:leave-start="opacity-100 translate-y-0 sm:scale-100"
+                                                        x-transition:leave-end="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95"
+                                                        class="relative bg-white rounded-2xl max-w-sm w-full p-6 text-center shadow-2xl border border-gray-100 z-10 transform transition-all">
+
+                                                        <div
+                                                            class="mx-auto flex items-center justify-center h-12 w-12 rounded-full bg-red-50 text-red-600 mb-4">
+                                                            <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24"
+                                                                stroke-width="2" stroke="currentColor">
+                                                                <path stroke-linecap="round" stroke-linejoin="round"
+                                                                    d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+                                                            </svg>
+                                                        </div>
+
+                                                        <h3 class="text-lg font-bold text-gray-900 mb-1">Yakin Ingin
+                                                            Hapus?</h3>
+                                                        <p
+                                                            class="text-xs text-gray-500 mb-6 leading-relaxed whitespace-normal">
+                                                            Kategori <span
+                                                                class="font-semibold text-gray-700">{{ $cat->name }}</span>
+                                                            akan dihapus secara permanen.
+                                                        </p>
+
+                                                        <div class="flex justify-center gap-3">
+                                                            <button @click="openDelete = false" type="button"
+                                                                class="px-4 py-2.5 bg-gray-100 hover:bg-gray-200 text-gray-700 text-xs font-bold rounded-xl transition-colors min-w-[80px]">
+                                                                Batal
+                                                            </button>
+                                                            <form action="{{ route('categories.destroy', $cat) }}"
+                                                                method="POST" class="inline">
+                                                                @csrf
+                                                                @method('DELETE')
+                                                                <button type="submit"
+                                                                    class="px-4 py-2.5 bg-red-600 hover:bg-red-700 text-white text-xs font-bold rounded-xl shadow-md hover:shadow-lg transition-all min-w-[80px]">
+                                                                    Ya, Hapus
+                                                                </button>
+                                                            </form>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+
                                         </div>
                                     </td>
                                 </tr>
@@ -167,22 +188,6 @@
     </div>
 
     <style>
-        @keyframes fade-in {
-            from {
-                opacity: 0;
-                transform: translateY(-5px);
-            }
-
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
-
-        .animate-fade-in {
-            animation: fade-in 0.3s ease-out;
-        }
-
         /* Custom scrollbar untuk tabel */
         .overflow-x-auto::-webkit-scrollbar {
             height: 6px;
