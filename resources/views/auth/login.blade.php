@@ -23,7 +23,6 @@
                 class="text-3xl font-black text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-indigo-600 tracking-wider">
                 Rajin Menabung
             </h1>
-            <p class="text-sm text-gray-500 mt-2">Masuk ke akun keuangan Anda</p>
         </div>
 
         <x-auth-session-status class="mb-4 text-sm text-green-600 bg-green-50 p-3 rounded-lg" :status="session('status')" />
@@ -42,12 +41,7 @@
             <div class="mb-5">
                 <div class="flex justify-between items-center mb-2">
                     <label for="password" class="block text-sm font-semibold text-gray-700">Password</label>
-                    @if (Route::has('password.request'))
-                        <a href="{{ route('password.request') }}"
-                            class="text-xs font-semibold text-blue-600 hover:text-blue-800 transition-colors">
-                            Lupa password?
-                        </a>
-                    @endif
+
                 </div>
                 <input id="password" type="password" name="password" required autocomplete="current-password"
                     placeholder="••••••••"
@@ -68,13 +62,7 @@
                 Masuk Sekarang
             </button>
 
-            @if (Route::has('register'))
-                <div class="mt-6 text-center text-sm text-gray-600">
-                    Belum punya akun?
-                    <a href="{{ route('register') }}"
-                        class="font-bold text-blue-600 hover:text-indigo-600 transition-colors">Daftar di sini</a>
-                </div>
-            @endif
+
         </form>
     </div>
 
