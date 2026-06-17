@@ -97,7 +97,23 @@ class RecurringTransactionController extends Controller
             'start_date' => 'required|date',
         ]);
 
-        $recurringTransaction->update($request->all());
+        // 1. Ambil data spesifik saja (Lebih aman dari $request->all())
+        $data = $request->only([
+            'description',
+            'type',
+            'category_id',
+            'wallet_id',
+            'amount',
+            'frequency',
+            'start_date'
+        ]);
+
+
+        if ($request->start_date !== $recurringTransaction->start_date || $request->frequency !== $recurringTransaction->frequency) {
+            $data['next_date'] = $request->start_date;
+        }
+
+        $recurringTransaction->update($data);
 
         return redirect()->route('recurring-transactions.index')
             ->with('success', 'Jadwal transaksi berhasil diperbarui.');

@@ -19,13 +19,15 @@ class RecurringTransaction extends Model
         'frequency',
         'start_date',
         'next_date',
-        'is_active'
+        'is_active',
+        'last_executed_at',
     ];
 
     protected $casts = [
         'start_date' => 'date',
         'next_date' => 'date',
         'is_active' => 'boolean',
+        'last_executed_at' => 'datetime',
     ];
 
     public function user()

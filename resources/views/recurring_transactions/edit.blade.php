@@ -12,8 +12,8 @@
                 {{-- Form dengan Alpine JS terintegrasi --}}
                 <form
                     x-data='{
-                    tipeTransaksi: "{{ $recurringTransaction->type }}",
-                    kategoriTerpilih: "{{ $recurringTransaction->category_id }}",
+                    tipeTransaksi: "{{ old('type', $recurringTransaction->type) }}",
+                    kategoriTerpilih: "{{ old('category_id', $recurringTransaction->category_id) }}",
                     semuaKategori: @json(
                         $categories->map(function ($c) {
                                 return ['id' => $c->id, 'name' => $c->name, 'type' => strtolower($c->type ?? 'expense')];
@@ -37,6 +37,9 @@
                                     <option value="expense">Pengeluaran</option>
                                     <option value="income">Pemasukan</option>
                                 </select>
+                                @error('type')
+                                    <p class="text-red-500 text-xs mt-1">{{ $message }}</p>
+                                @enderror
                             </div>
 
                             <div>
@@ -46,18 +49,25 @@
                                     class="mt-1 w-full rounded-xl border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 text-sm"
                                     required>
                                     <option value="daily"
-                                        {{ $recurringTransaction->frequency == 'daily' ? 'selected' : '' }}>Harian
+                                        {{ old('frequency', $recurringTransaction->frequency) == 'daily' ? 'selected' : '' }}>
+                                        Harian
                                     </option>
                                     <option value="weekly"
-                                        {{ $recurringTransaction->frequency == 'weekly' ? 'selected' : '' }}>Mingguan
+                                        {{ old('frequency', $recurringTransaction->frequency) == 'weekly' ? 'selected' : '' }}>
+                                        Mingguan
                                     </option>
                                     <option value="monthly"
-                                        {{ $recurringTransaction->frequency == 'monthly' ? 'selected' : '' }}>Bulanan
+                                        {{ old('frequency', $recurringTransaction->frequency) == 'monthly' ? 'selected' : '' }}>
+                                        Bulanan
                                     </option>
                                     <option value="yearly"
-                                        {{ $recurringTransaction->frequency == 'yearly' ? 'selected' : '' }}>Tahunan
+                                        {{ old('frequency', $recurringTransaction->frequency) == 'yearly' ? 'selected' : '' }}>
+                                        Tahunan
                                     </option>
                                 </select>
+                                @error('frequency')
+                                    <p class="text-red-500 text-xs mt-1">{{ $message }}</p>
+                                @enderror
                             </div>
                         </div>
 
@@ -72,9 +82,13 @@
                                     <option value="" disabled>-- Pilih Kategori --</option>
                                     <template x-for="cat in semuaKategori.filter(c => c.type === tipeTransaksi)"
                                         :key="cat.id">
-                                        <option :value="cat.id" x-text="cat.name"></option>
+                                        <option :value="cat.id" x-text="cat.name"
+                                            :selected="cat.id == kategoriTerpilih"></option>
                                     </template>
                                 </select>
+                                @error('category_id')
+                                    <p class="text-red-500 text-xs mt-1">{{ $message }}</p>
+                                @enderror
                             </div>
 
                             <div>
@@ -85,11 +99,14 @@
                                     required>
                                     @foreach ($wallets as $wallet)
                                         <option value="{{ $wallet->id }}"
-                                            {{ $recurringTransaction->wallet_id == $wallet->id ? 'selected' : '' }}>
+                                            {{ old('wallet_id', $recurringTransaction->wallet_id) == $wallet->id ? 'selected' : '' }}>
                                             {{ $wallet->name }}
                                         </option>
                                     @endforeach
                                 </select>
+                                @error('wallet_id')
+                                    <p class="text-red-500 text-xs mt-1">{{ $message }}</p>
+                                @enderror
                             </div>
                         </div>
 
@@ -97,19 +114,41 @@
                         <div>
                             <label
                                 class="block text-xs font-bold text-gray-700 uppercase tracking-wide">Deskripsi</label>
-                            <input type="text" name="description" value="{{ $recurringTransaction->description }}"
+                            <input type="text" name="description"
+                                value="{{ old('description', $recurringTransaction->description) }}"
                                 class="mt-1 w-full rounded-xl border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
                                 required>
+                            @error('description')
+                                <p class="text-red-500 text-xs mt-1">{{ $message }}</p>
+                            @enderror
                         </div>
 
-                        {{-- Baris 4: Nominal --}}
-                        <div>
-                            <label class="block text-xs font-bold text-gray-700 uppercase tracking-wide">Nominal
-                                (Rp)</label>
-                            <input type="number" name="amount" value="{{ $recurringTransaction->amount }}"
-                                min="1"
-                                class="mt-1 w-full rounded-xl border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 text-lg font-bold"
-                                required>
+                        {{-- Baris 4: Nominal & Tanggal Mulai --}}
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
+                            <div>
+                                <label class="block text-xs font-bold text-gray-700 uppercase tracking-wide">Nominal
+                                    (Rp)</label>
+                                <input type="number" name="amount"
+                                    value="{{ old('amount', $recurringTransaction->amount) }}" min="1"
+                                    class="mt-1 w-full rounded-xl border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 text-lg font-bold"
+                                    required>
+                                @error('amount')
+                                    <p class="text-red-500 text-xs mt-1">{{ $message }}</p>
+                                @enderror
+                            </div>
+
+                            {{-- INI ADALAH INPUT YANG HILANG SEBELUMNYA --}}
+                            <div>
+                                <label class="block text-xs font-bold text-gray-700 uppercase tracking-wide">Tanggal
+                                    Mulai Berlaku</label>
+                                <input type="date" name="start_date"
+                                    value="{{ old('start_date', \Carbon\Carbon::parse($recurringTransaction->start_date)->format('Y-m-d')) }}"
+                                    class="mt-1 w-full rounded-xl border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
+                                    required>
+                                @error('start_date')
+                                    <p class="text-red-500 text-xs mt-1">{{ $message }}</p>
+                                @enderror
+                            </div>
                         </div>
 
                         {{-- Tombol Aksi --}}

@@ -12,24 +12,31 @@
 
                     <form action="{{ route('wallets.update', $wallet) }}" method="POST">
                         @csrf
-                        @method('PUT') <div class="mb-4">
-                            <label for="name" class="block text-sm font-medium text-gray-700">Nama Dompet</label>
-                            <div>
-                                <label class="block text-sm font-medium text-gray-700">Nama Dompet / Rekening</label>
-                                <select name="name"
-                                    class="mt-1 w-full rounded-xl border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
-                                    required>
-                                    <option value="">-- Pilih Jenis Dompet --</option>
-                                    @foreach ($masterWallets as $mw)
-                                        <option value="{{ $wallet->name == $mw->name ? 'selected' : '' }}"</option>
-                                    @endforeach
-                                </select>
-                            </div>
+                        @method('PUT')
+
+                        <div class="mb-4">
+                            <label class="block text-sm font-medium text-gray-700 mb-1">Nama Dompet / Rekening</label>
+                            <select name="name"
+                                class="mt-1 w-full rounded-xl border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
+                                required>
+                                <option value="">-- Pilih Jenis Dompet --</option>
+                                @foreach ($masterWallets as $mw)
+                                    {{-- PERBAIKAN DI SINI --}}
+                                    <option value="{{ $mw->name }}"
+                                        {{ $wallet->name == $mw->name ? 'selected' : '' }}>
+                                        {{ $mw->name }}
+                                    </option>
+                                @endforeach
+                            </select>
+                            @error('name')
+                                <p class="text-red-500 text-xs mt-1">{{ $message }}</p>
+                            @enderror
                         </div>
 
                         <div class="mb-6">
-                            <label for="balance" class="block text-sm font-medium text-gray-700">Penyesuaian Saldo
-                                (Rp)</label>
+                            <label for="balance" class="block text-sm font-medium text-gray-700 mb-1">
+                                Penyesuaian Saldo (Rp)
+                            </label>
                             <input type="number" name="balance" id="balance"
                                 value="{{ old('balance', round($wallet->balance)) }}"
                                 class="mt-1 block w-full border-gray-300 focus:border-blue-500 focus:ring-blue-500 rounded-md shadow-sm"

@@ -22,15 +22,24 @@
                             <select name="type"
                                 class="w-full px-4 py-2.5 rounded-xl border border-gray-200 bg-gray-50 focus:bg-white focus:border-blue-400 focus:ring-2 focus:ring-blue-200 outline-none"
                                 required>
-                                <option value="debt">Utang (Saya pinjam uang orang)</option>
-                                <option value="receivable">Piutang (Orang pinjam uang saya)</option>
+                                <option value="debt" {{ old('type') == 'debt' ? 'selected' : '' }}>Utang (Saya pinjam
+                                    uang orang)</option>
+                                <option value="receivable" {{ old('type') == 'receivable' ? 'selected' : '' }}>Piutang
+                                    (Orang pinjam uang saya)</option>
                             </select>
+                            @error('type')
+                                <p class="text-red-500 text-xs mt-1">{{ $message }}</p>
+                            @enderror
                         </div>
                         <div>
                             <label class="block text-sm font-semibold text-gray-700 mb-2">Nama Kontak Orang</label>
                             <input type="text" name="person_name" placeholder="Nama pemberi / peminjam uang"
+                                value="{{ old('person_name') }}"
                                 class="w-full px-4 py-2.5 rounded-xl border border-gray-200 bg-gray-50 focus:bg-white focus:border-blue-400 focus:ring-2 focus:ring-blue-200 outline-none"
                                 required>
+                            @error('person_name')
+                                <p class="text-red-500 text-xs mt-1">{{ $message }}</p>
+                            @enderror
                         </div>
                     </div>
 
@@ -38,23 +47,33 @@
                         <div>
                             <label class="block text-sm font-semibold text-gray-700 mb-2">Nominal (Rp)</label>
                             <input type="number" name="amount" min="1" placeholder="0"
+                                value="{{ old('amount') }}"
                                 class="w-full px-4 py-2.5 rounded-xl border border-gray-200 bg-gray-50 focus:bg-white focus:border-blue-400 focus:ring-2 focus:ring-blue-200 outline-none font-semibold"
                                 required>
+                            @error('amount')
+                                <p class="text-red-500 text-xs mt-1">{{ $message }}</p>
+                            @enderror
                         </div>
                         <div>
                             <label class="block text-sm font-semibold text-gray-700 mb-2">Tanggal Jatuh Tempo <span
                                     class="text-gray-400 font-normal">(Opsional)</span></label>
-                            <input type="date" name="due_date"
+                            <input type="date" name="due_date" value="{{ old('due_date') }}"
                                 class="w-full px-4 py-2.5 rounded-xl border border-gray-200 bg-gray-50 focus:bg-white focus:border-blue-400 focus:ring-2 focus:ring-blue-200 outline-none">
+                            @error('due_date')
+                                <p class="text-red-500 text-xs mt-1">{{ $message }}</p>
+                            @enderror
                         </div>
                     </div>
 
                     <div class="mb-8">
                         <label class="block text-sm font-semibold text-gray-700 mb-2">Keterangan Catatan <span
                                 class="text-gray-400 font-normal">(Opsional)</span></label>
-                        <input type="text" name="description"
+                        <input type="text" name="description" value="{{ old('description') }}"
                             placeholder="Contoh: Pinjam uang buat bayar token listrik sementara"
                             class="w-full px-4 py-2.5 rounded-xl border border-gray-200 bg-gray-50 focus:bg-white focus:border-blue-400 focus:ring-2 focus:ring-blue-200 outline-none">
+                        @error('description')
+                            <p class="text-red-500 text-xs mt-1">{{ $message }}</p>
+                        @enderror
                     </div>
 
                     <div class="flex items-center justify-end gap-4 pt-4 border-t">

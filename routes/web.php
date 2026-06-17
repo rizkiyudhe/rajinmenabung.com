@@ -45,7 +45,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::resource('transactions', TransactionController::class);
         Route::resource('transfers', TransferController::class);
         Route::resource('debts', DebtController::class);
-        Route::post('/debts/{debt}/settle', [DebtController::class, 'settle'])->name('debts.settle');
+        Route::get('/debts/{debt}/settle', [DebtController::class, 'settle'])->name('debts.settle');
         Route::resource('budgets', BudgetController::class)->except(['show', 'edit', 'update']);
 
         Route::resource('recurring-transactions', RecurringTransactionController::class);

@@ -74,6 +74,9 @@
                                                             <option value="expense">Pengeluaran</option>
                                                             <option value="income">Pemasukan</option>
                                                         </select>
+                                                        @error('type')
+                                                            <p class="text-red-500 text-xs mt-1">{{ $message }}</p>
+                                                        @enderror
                                                     </div>
                                                     <div>
                                                         <label
@@ -86,6 +89,9 @@
                                                             <option value="monthly" selected>Bulanan</option>
                                                             <option value="yearly">Tahunan</option>
                                                         </select>
+                                                        @error('frequency')
+                                                            <p class="text-red-500 text-xs mt-1">{{ $message }}</p>
+                                                        @enderror
                                                     </div>
                                                 </div>
 
@@ -106,6 +112,9 @@
                                                                 </option>
                                                             </template>
                                                         </select>
+                                                        @error('category_id')
+                                                            <p class="text-red-500 text-xs mt-1">{{ $message }}</p>
+                                                        @enderror
                                                     </div>
                                                     <div>
                                                         <label
@@ -118,6 +127,9 @@
                                                                 </option>
                                                             @endforeach
                                                         </select>
+                                                        @error('wallet_id')
+                                                            <p class="text-red-500 text-xs mt-1">{{ $message }}</p>
+                                                        @enderror
                                                     </div>
                                                 </div>
 
@@ -126,34 +138,48 @@
                                                         class="block text-xs font-bold text-gray-700 uppercase tracking-wide">Deskripsi
                                                         (Contoh: Tagihan WiFi)</label>
                                                     <input type="text" name="description"
+                                                        value="{{ old('description') }}"
                                                         class="mt-1 w-full rounded-xl border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
                                                         required>
+                                                    @error('description')
+                                                        <p class="text-red-500 text-xs mt-1">{{ $message }}</p>
+                                                    @enderror
                                                 </div>
 
-                                                <div>
-                                                    <label
-                                                        class="block text-xs font-bold text-gray-700 uppercase tracking-wide">Nominal
-                                                        (Rp)</label>
-                                                    <input type="number" name="amount" min="1"
-                                                        class="mt-1 w-full rounded-xl border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 text-lg font-bold"
-                                                        required>
-                                                </div>
+                                                {{-- BARIS BARU: Nominal & Tanggal Mulai disejajarkan --}}
+                                                <div class="grid grid-cols-2 gap-4">
+                                                    <div>
+                                                        <label
+                                                            class="block text-xs font-bold text-gray-700 uppercase tracking-wide">Nominal
+                                                            (Rp)</label>
+                                                        <input type="number" name="amount" min="1"
+                                                            value="{{ old('amount') }}"
+                                                            class="mt-1 w-full rounded-xl border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 font-bold"
+                                                            required>
+                                                        @error('amount')
+                                                            <p class="text-red-500 text-xs mt-1">{{ $message }}</p>
+                                                        @enderror
+                                                    </div>
 
-                                                <div>
-                                                    <label
-                                                        class="block text-xs font-bold text-gray-700 uppercase tracking-wide">Mulai
-                                                        Dieksekusi Tanggal</label>
-                                                    <input type="date" name="start_date"
-                                                        class="mt-1 w-full rounded-xl border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
-                                                        required value="{{ date('Y-m-d') }}">
+                                                    <div>
+                                                        <label
+                                                            class="block text-xs font-bold text-gray-700 uppercase tracking-wide">Mulai
+                                                            Berlaku</label>
+                                                        <input type="date" name="start_date"
+                                                            class="mt-1 w-full rounded-xl border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
+                                                            required value="{{ old('start_date', date('Y-m-d')) }}">
+                                                        @error('start_date')
+                                                            <p class="text-red-500 text-xs mt-1">{{ $message }}</p>
+                                                        @enderror
+                                                    </div>
                                                 </div>
                                             </div>
 
-                                            <div class="mt-6 flex gap-3">
+                                            <div class="mt-6 flex gap-3 border-t border-gray-100 pt-5">
                                                 <button type="button" @click="openForm = false"
-                                                    class="w-full justify-center rounded-xl bg-white px-3 py-2.5 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50">Batal</button>
+                                                    class="w-full justify-center rounded-xl bg-gray-100 px-3 py-2.5 text-sm font-semibold text-gray-700 shadow-sm hover:bg-gray-200 transition">Batal</button>
                                                 <button type="submit"
-                                                    class="w-full justify-center rounded-xl bg-blue-600 px-3 py-2.5 text-sm font-semibold text-white shadow-sm hover:bg-blue-700">Simpan
+                                                    class="w-full justify-center rounded-xl bg-blue-600 px-3 py-2.5 text-sm font-semibold text-white shadow-sm hover:bg-blue-700 transition">Simpan
                                                     Jadwal</button>
                                             </div>
                                         </form>
@@ -169,6 +195,18 @@
 
     <div class="py-8">
         <div class="max-w-6xl mx-auto sm:px-6 lg:px-8">
+
+            {{-- Pesan Sukses / Error --}}
+            @if (session('success'))
+                <div
+                    class="mb-6 p-4 bg-emerald-50 text-emerald-700 rounded-xl border border-emerald-100 flex items-center gap-3">
+                    <svg class="w-5 h-5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7">
+                        </path>
+                    </svg>
+                    <p class="font-medium text-sm">{{ session('success') }}</p>
+                </div>
+            @endif
 
             {{-- Layout List Memanjang ke Bawah --}}
             <div class="space-y-4">
@@ -232,7 +270,13 @@
                                 </p>
                                 <p
                                     class="text-xs font-semibold {{ $trx->is_active ? 'text-blue-600' : 'text-gray-400' }} mt-1">
-                                    {{ $trx->is_active ? 'Selanjutnya: ' . \Carbon\Carbon::parse($trx->next_date)->format('d M Y') : 'Dinonaktifkan' }}
+                                    @if (!$trx->is_active)
+                                        Dinonaktifkan
+                                    @elseif ($trx->frequency == 'daily')
+                                        Dieksekusi Setiap Hari
+                                    @else
+                                        Selanjutnya: {{ \Carbon\Carbon::parse($trx->next_date)->format('d M Y') }}
+                                    @endif
                                 </p>
                             </div>
 
